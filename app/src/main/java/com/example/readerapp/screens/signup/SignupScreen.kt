@@ -1,4 +1,4 @@
-package com.example.readerapp.screens.login
+package com.example.readerapp.screens.signup
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,38 +16,40 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.readerapp.R
 import com.example.readerapp.components.ReaderLogo
 import com.example.readerapp.navigation.ReaderScreens
 
 @Composable
-fun LoginScreen(navController: NavController?){
+fun SignupScreen(navController: NavController?){
     val  email = rememberSaveable { mutableStateOf("") }
     val  password = rememberSaveable { mutableStateOf("") }
+
     Scaffold { innerPadding ->
         Column(Modifier.padding(innerPadding).fillMaxSize()) {
             Column(horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize().padding(top=40.dp)) {
+                modifier = Modifier.fillMaxSize().padding(top=40.dp)) {
                 ReaderLogo()
-                LoginForm(email=email, password=password,)
-                Spacer(modifier = Modifier.padding(10.dp))
+                Text(text = "Create new Account", fontSize = 20.sp,)
+                Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+                    SignUpForm(email, password)
+                    Spacer(modifier = Modifier.padding(10.dp))
 
-                Row(modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center) {
-                    Text(text = stringResource(id = R.string.login_description),
-                        fontSize = 13.sp)
-                    Text(text = "Sign up",
-                        fontSize = 13.sp,
-                        color = Color.Blue,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable {
-                            navController?.navigate(route = ReaderScreens.SIGNUP_SCREEN.path)
-                        })
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center) {
+                        Text(text = "Already having account?",
+                            fontSize = 13.sp)
+                        Text(text = "Login",
+                            fontSize = 13.sp,
+                            color = Color.Blue,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.clickable {
+                                navController?.navigate(route = ReaderScreens.LOGIN_SCREEN.path)
+                            })
+                    }
                 }
             }
         }

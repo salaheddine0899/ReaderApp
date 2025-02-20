@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.readerapp.components.ReaderLogo
 import com.example.readerapp.navigation.ReaderScreens
 import kotlinx.coroutines.delay
 
@@ -53,7 +54,7 @@ fun SplashScreen(navController: NavController?){
         ) {
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "Reader", fontSize = 45.sp, color = Color.Red)
+                ReaderLogo()
                 Text(text = "\"Read. Discover. Improve\"", fontSize = 25.sp)
             }
         }
