@@ -1,13 +1,11 @@
 package com.example.readerapp.screens.login
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -20,9 +18,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.readerapp.states.LoadingState
-import com.example.readerapp.viewModel.LoginViewModel
 import com.example.readerapp.widgets.InputField
 import com.example.readerapp.widgets.PasswordField
 
@@ -30,7 +25,7 @@ import com.example.readerapp.widgets.PasswordField
 fun LoginForm(
     email: MutableState<String>,
     password: MutableState<String>,
-    viewModel: LoginViewModel = hiltViewModel(),
+    onDone: ()->Unit
     ) {
     val passwordFocusRequest = FocusRequester.Default
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -57,31 +52,18 @@ fun LoginForm(
             passwordVisibility = passwordVisibility,
             onAction = KeyboardActions {
                 if (!valid) return@KeyboardActions
-                onDone(email=email.value, password= password.value)
+                onDone()
                 keyboardController?.hide()
             }
         )
         Button(
             onClick = {
-                onDone(email.value, password.value)
-                viewModel.signInWithEmailAndPassword(email= email.value, password = password.value)
+                onDone()
             }, modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
             enabled = valid
         ) { Text(text = "Login") }
     }
-    /*LaunchedEffect(viewModel.loading) {
-        Log.d("FirebaseAuth", viewModel.loading.value.toString())
-    }*/
-    if(viewModel.loading.value === LoadingState.Success)
-        Log.d("FirebaseAuth","yes")
-    else if(viewModel.loading.value === LoadingState.Failed)
-        Log.d("FirebaseAuth","No")
-    else if(viewModel.loading.value === LoadingState.Loading)
-        CircularProgressIndicator()
 
-}
 
-private fun onDone(email: String, password: String) {
-    Log.d("login", "$email $password")
 }

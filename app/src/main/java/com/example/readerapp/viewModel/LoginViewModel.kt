@@ -5,13 +5,16 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.readerapp.model.MUser
 import com.example.readerapp.states.LoadingState
+import com.example.readerapp.utils.DatabaseConstants.USER_COLLECTION
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,45 +26,55 @@ class LoginViewModel @Inject constructor(): ViewModel(){
 
 
 
-    fun createUserWithEmailAndPassword(){
-
-    }
-
-    fun signInWithEmailAndPassword(email: String, password: String) = viewModelScope.launch {
-        Log.d("FirebaseAuth", "Email before trimming: '$email'")
-        Log.d("FirebaseAuth", "Password before trimming: '$password'")
-
-        val trimmedEmail = email.trim()
-        val trimmedPassword = password.trim()
-
-        Log.d("FirebaseAuth", "Email after trimming: '$trimmedEmail'")
-
-        if (trimmedEmail.isEmpty() || trimmedPassword.isEmpty()) {
-            Log.e("FirebaseAuth", "Email or password is empty")
-            _loading.value = LoadingState.Failed
-            return@launch
-        }
-
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches()) {
-            Log.e("FirebaseAuth", "Invalid email format: '$trimmedEmail'")
-            _loading.value = LoadingState.Failed
-            return@launch
-        }
-
+    fun createUserWithEmailAndPassword(email: String, password: String, navigateLogin:()->Unit){
         try {
             _loading.value = LoadingState.Loading
-            val result = auth.signInWithEmailAndPassword(trimmedEmail, trimmedPassword).await()
-            if (result.user != null) {
-                _loading.value = LoadingState.Success
-                Log.d("FirebaseAuth", "Login successful: ${result.user?.email} ${_loading.value}")
-            } else {
-                _loading.value = LoadingState.Failed
-                Log.d("FirebaseAuth", "Login failed")
-            }
+            auth.createUserWithEmailAndPassword(email.trim(), password.trim())
+                .addOnCompleteListener{
+                        task->
+                    if(task.isSuccessful){
+                        _loading.value = LoadingState.Success
+                        navigateLogin()
+                        Log.d("FirebaseAuth", "Account created successfully: $email ${_loading.value}")
+                    }else{
+                        _loading.value = LoadingState.Failed
+                        Log.d("FirebaseAuth", "Login failed")
+                    }
+                }
         } catch (e: Exception) {
             _loading.value = LoadingState.Failed
             Log.e("FirebaseAuth", "Error: ${e.message}")
         }
+    }
+
+    fun signInWithEmailAndPassword(email: String, password: String, navigateHome:()->Unit) = viewModelScope.launch {
+        try {
+            _loading.value = LoadingState.Loading
+            auth.signInWithEmailAndPassword(email.trim(), password.trim())
+                .addOnCompleteListener{
+                    task->
+                    if(task.isSuccessful){
+                        _loading.value = LoadingState.Success
+                        Log.d("FirebaseAuth", "Login successful: $email ${_loading.value}")
+                        createUser(task.result.user)
+                        navigateHome()
+                    }else{
+                        _loading.value = LoadingState.Failed
+                        Log.d("FirebaseAuth", "Login failed")
+                    }
+                }
+        } catch (e: Exception) {
+            _loading.value = LoadingState.Failed
+            Log.e("FirebaseAuth", "Error: ${e.message}")
+        }
+    }
+
+    private fun createUser(user:FirebaseUser?){
+        val userId = user?.uid
+        val displayName = user?.email?.split('@')?.get(0)
+        val userToPersist = MUser(userId= userId.toString(), displayName = displayName.toString(),
+            email = user?.email.toString(), avatarUrl = "", quote = "", profession = "", id = null).toMap()
+        FirebaseFirestore.getInstance().collection(USER_COLLECTION).add(userToPersist)
     }
 
 

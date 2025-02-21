@@ -25,6 +25,7 @@ import com.example.readerapp.widgets.PasswordField
 fun SignUpForm(
     email: MutableState<String>,
     password: MutableState<String>,
+    onDone: ()->Unit
 ) {
     val passwordFocusRequest = FocusRequester.Default
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -49,14 +50,14 @@ fun SignUpForm(
             passwordVisibility = passwordVisibility,
             onAction = KeyboardActions {
                 if (!valid) return@KeyboardActions
-                onDone(email=email.value, password= password.value)
+                onDone()
                 keyboardController?.hide()
             }
         )
         Button(
             onClick = {
                 Log.d("login", "${email.value} ${password.value}")
-                onDone(email=email.value, password= password.value)
+                onDone()
             }, modifier = Modifier.fillMaxWidth(),
             enabled = valid,
             shape = RoundedCornerShape(20.dp)
@@ -64,6 +65,3 @@ fun SignUpForm(
     }
 }
 
-private fun onDone(email: String, password: String) {
-    Log.d("login", "$email $password")
-}

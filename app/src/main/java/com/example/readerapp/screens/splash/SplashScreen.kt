@@ -1,5 +1,6 @@
 package com.example.readerapp.screens.splash
 
+import android.util.Log
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.readerapp.components.ReaderLogo
 import com.example.readerapp.navigation.ReaderScreens
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
 @Composable
@@ -40,14 +42,16 @@ fun SplashScreen(navController: NavController?){
             }
         ))
         delay(2000L)
-        navController?.navigate(route = ReaderScreens.LOGIN_SCREEN.path)
+        Log.d("Splash", FirebaseAuth.getInstance().currentUser?.uid.toString())
+        if(FirebaseAuth.getInstance().currentUser?.uid.isNullOrBlank())
+            navController?.navigate(route = ReaderScreens.LOGIN_SCREEN.path)
+        navController?.navigate(route = ReaderScreens.HOME_SCREEN.path)
     }
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
         Card(shape = CircleShape, border = BorderStroke(width = 2.dp, color = Color.LightGray),
             modifier = Modifier.width(350.dp).height(350.dp)
-                .scale(scale.value)
-            ,
+                .scale(scale.value),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
             onClick = {
             }

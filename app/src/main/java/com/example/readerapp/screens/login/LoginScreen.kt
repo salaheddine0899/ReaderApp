@@ -1,5 +1,6 @@
 package com.example.readerapp.screens.login
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,13 +22,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.readerapp.R
 import com.example.readerapp.components.ReaderLogo
 import com.example.readerapp.navigation.ReaderScreens
+import com.example.readerapp.states.LoadingState
+import com.example.readerapp.viewModel.LoginViewModel
 
 @Composable
-fun LoginScreen(navController: NavController?){
+fun LoginScreen(navController: NavController?,
+                viewModel: LoginViewModel = hiltViewModel(), ){
     val  email = rememberSaveable { mutableStateOf("") }
     val  password = rememberSaveable { mutableStateOf("") }
     Scaffold { innerPadding ->
@@ -34,7 +40,11 @@ fun LoginScreen(navController: NavController?){
             Column(horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxSize().padding(top=40.dp)) {
                 ReaderLogo()
-                LoginForm(email=email, password=password,)
+                LoginForm(email=email, password=password,){
+                    viewModel.signInWithEmailAndPassword(email= email.value, password = password.value){
+                        navController?.navigate(route = ReaderScreens.HOME_SCREEN.path)
+                    }
+                }
                 Spacer(modifier = Modifier.padding(10.dp))
 
                 Row(modifier = Modifier.fillMaxWidth(),
@@ -49,6 +59,10 @@ fun LoginScreen(navController: NavController?){
                             navController?.navigate(route = ReaderScreens.SIGNUP_SCREEN.path)
                         })
                 }
+                if(viewModel.loading.value === LoadingState.Failed)
+                    Log.d("FirebaseAuth","No")
+                else if(viewModel.loading.value === LoadingState.Loading)
+                    CircularProgressIndicator()
             }
         }
     }

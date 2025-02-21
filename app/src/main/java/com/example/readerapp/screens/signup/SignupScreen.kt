@@ -1,5 +1,6 @@
 package com.example.readerapp.screens.signup
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,12 +20,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.readerapp.components.ReaderLogo
 import com.example.readerapp.navigation.ReaderScreens
+import com.example.readerapp.viewModel.LoginViewModel
 
 @Composable
-fun SignupScreen(navController: NavController?){
+fun SignupScreen(navController: NavController?,
+                 viewModel: LoginViewModel = hiltViewModel()
+){
     val  email = rememberSaveable { mutableStateOf("") }
     val  password = rememberSaveable { mutableStateOf("") }
 
@@ -35,7 +40,13 @@ fun SignupScreen(navController: NavController?){
                 ReaderLogo()
                 Text(text = "Create new Account", fontSize = 20.sp,)
                 Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
-                    SignUpForm(email, password)
+                    SignUpForm(email, password){
+                        Log.d("login", "$email $password")
+                        viewModel.createUserWithEmailAndPassword(email=email.value,
+                            password = password.value){
+                            navController?.navigate(route = ReaderScreens.LOGIN_SCREEN.path)
+                        }
+                    }
                     Spacer(modifier = Modifier.padding(10.dp))
 
                     Row(modifier = Modifier.fillMaxWidth(),

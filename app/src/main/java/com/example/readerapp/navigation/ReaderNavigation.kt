@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.readerapp.screens.home.HomeScreen
 import com.example.readerapp.screens.login.LoginScreen
 import com.example.readerapp.screens.signup.SignupScreen
 import com.example.readerapp.screens.splash.SplashScreen
@@ -21,6 +22,9 @@ fun ReaderNavigation(){
         }
         composable(route = ReaderScreens.SIGNUP_SCREEN.path){
             SignupScreen(navController = navController)
+        }
+        composable(route = ReaderScreens.HOME_SCREEN.path){
+            HomeScreen(navController = navController)
         }
     }
 }
