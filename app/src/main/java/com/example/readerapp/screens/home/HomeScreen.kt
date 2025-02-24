@@ -15,6 +15,7 @@ fun HomeScreen(navController: NavController?){
             HomeHeader()
             UserQuoteRow()
             ReadingBooksRow()
+            ReadingList()
         }
     }
 }

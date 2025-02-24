@@ -35,15 +35,12 @@ class LoginViewModel @Inject constructor(): ViewModel(){
                     if(task.isSuccessful){
                         _loading.value = LoadingState.Success
                         navigateLogin()
-                        Log.d("FirebaseAuth", "Account created successfully: $email ${_loading.value}")
                     }else{
                         _loading.value = LoadingState.Failed
-                        Log.d("FirebaseAuth", "Login failed")
                     }
                 }
         } catch (e: Exception) {
             _loading.value = LoadingState.Failed
-            Log.e("FirebaseAuth", "Error: ${e.message}")
         }
     }
 
