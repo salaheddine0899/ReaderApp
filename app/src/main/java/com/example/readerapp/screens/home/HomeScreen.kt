@@ -7,12 +7,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.example.readerapp.screens.topbars.HomeTopBar
 
 @Composable
 fun HomeScreen(navController: NavController?){
-    Scaffold { innerPadding->
+    Scaffold(
+        topBar = { HomeTopBar(navController=navController) },
+        floatingActionButton = {
+            FabContent(){
+
+            }
+        }
+    ) { innerPadding->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-            HomeHeader()
             UserQuoteRow()
             ReadingBooksRow()
             ReadingList()
